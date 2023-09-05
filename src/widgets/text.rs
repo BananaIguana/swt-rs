@@ -14,28 +14,8 @@ use {
 
 define_swt_object!(Text);
 
-impl<'a> Text<'a>
+pub trait TextTrait<'a>: JavaObject<'a>
 {
-    // Constructor
-
-    pub fn new<T>(parent: &T, style: i32) -> Result<Self, Error>
-    where
-        T: JavaObject<'a>,
-    {
-        let jenv = JVM.get_env()?;
-        let jcls = jenv.find_class("org/eclipse/swt/widgets/Text")?;
-        let jobj = jenv.new_object(
-            jcls,
-            "(Lorg/eclipse/swt/widgets/Composite;I)V",
-            &[
-                jni::objects::JValue::Object(parent.get_object()),
-                jni::objects::JValue::Int(style),
-            ],
-        )?;
-
-        Ok(Self { jobj })
-    }
-
     // swt_fn!(add_modify_listener, "?")
     // swt_fn!(add_segment_listener, "?")
     // swt_fn!(add_selection_listener, "?")
@@ -93,3 +73,31 @@ impl<'a> Text<'a>
     // TEMPORARY
     swt_fn!(pack, "()V");
 }
+
+impl<'a> Text<'a>
+{
+    // Constructor
+
+    pub fn new<T>(parent: &T, style: i32) -> Result<Self, Error>
+    where
+        T: JavaObject<'a>,
+    {
+        let jenv = JVM.get_env()?;
+        let jcls = jenv.find_class("org/eclipse/swt/widgets/Text")?;
+        let jobj = jenv.new_object(
+            jcls,
+            "(Lorg/eclipse/swt/widgets/Composite;I)V",
+            &[
+                jni::objects::JValue::Object(parent.get_object()),
+                jni::objects::JValue::Int(style),
+            ],
+        )?;
+
+        Ok(Self { jobj })
+    }
+}
+
+// impl<'a> WidgetTrait<'a> for Text<'a> {}
+// impl<'a> ControlTrait<'a> for Text<'a> {}
+// impl<'a> ScrollableTrait<'a> for Text<'a> {}
+impl<'a> TextTrait<'a> for Text<'a> {}
